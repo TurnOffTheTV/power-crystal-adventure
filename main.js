@@ -42,30 +42,6 @@ function errorDisplay(errorMessage) {
   sounds.dont_stop.stop();
 }
 
-function player(){
-  px+=pxVelocity*2;
-  py+=pyVelocity*2;
-  fill(random()*255,random()*255,random()*255);
-  ellipse(px,py,20,20);
-  function keyPressed(){
-    if(keyCode===65){keysNow.left=true;}
-    if(keyCode===65){keysNow.right=true;}
-    if(keyCode===87){keysNow.up=true;}
-    if(keyCode===83){keysNow.down=true;}
-  }
-
-  function keyReleased(){
-    if(keyCode===65){keysNow.left=false;}
-    if(keyCode===65){keysNow.right=false;}
-    if(keyCode===87){keysNow.up=false;}
-    if(keyCode===83){keysNow.down=false;}
-  }
-  if(keysNow.up){pyVelocity=-1;}
-  if(keysNow.down){pyVelocity=1;}
-  if(keysNow.left){pxVelocity=-1;}
-  if(keysNow.right){pxVelocity=1;}
-}
-
 function mousePressed(){
   sounds.africa.stop();
   sounds.dont_stop.stop();
@@ -89,6 +65,5 @@ function draw() {
   if(sounds.dont_stop.isPlaying()){
     image(images.dont_stop,width/2,height/2);
   }
-  player();
   if(width!==windowWidth || height!==windowHeight){errorDisplay("Window size changed.");}
 }
