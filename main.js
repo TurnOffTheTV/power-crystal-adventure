@@ -8,15 +8,25 @@ var cy;
 var pxVelocity;
 var pyVelocity;
 var pr;
-var keysNow = {};
+var keysNow;
 var pWalkCycle;
-var gamepad;
+var player_foot_r;
 var stick;
 var buttons;
+var players;
+
+setInterval(() => {
+  player.one = navigator.getGamepads()[0];
+  console.log(gamepad);
+  stick.lx=player.one.axes[0];
+  stick.ly=player.one.axes[1];
+}, 100) // print axes 10 times per second
 
 function preload(){
+  gamepad = navigator.getGamepads()[0];
   sounds = {
     error:loadSound('sounds/error.mp3'),
+    errorPlays:0
   };
   images = {
     grass:loadImage('images/grass.png'),
@@ -65,12 +75,6 @@ function preload(){
   };
 }
 
-setInterval(() => {
-  var myGamepad = navigator.getGamepads()[0];
-  stick.lx=myGamepad.axes[0];
-  stick.ly=myGamepad.axes[1];
-}, 100) // print axes 10 times per second
-
 function setup() {
   createCanvas(windowWidth, windowHeight);
   px = width/2;
@@ -78,7 +82,7 @@ function setup() {
 }
 
 function errorDisplay(errorMessage) {
-  if(sounds.error.isPlaying()===false){sounds.error.play();}
+  if(sounds.error.isPlaying()===false && sounds.errorPlays===0){sounds.error.play();sounds.errorPlays=1;}
   background(255);
   fill(0);
   text(errorMessage+" Please reload. Progress saved.",windowWidth/2,windowHeight/2);
@@ -279,6 +283,10 @@ function player() {
   } else {image(images.player_feet,0,0);}
   image(images.player,0,0);
   pop();
+  stroke(0);
+  strokeWeight(5);
+  pr = atan2(stick.ly*100 + py, stick.lx*100 + px);
+  noStroke();
   if(pWalkCycle>3){pWalkCycle=0;}
   if(pxVelocity!==0 || pyVelocity!==0){
     if(pWalkCycle===0){image(images.player_foot_l,0,0);}
