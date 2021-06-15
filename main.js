@@ -268,13 +268,18 @@ function input() {
   pyVelocity = 0;
   if(stick.lx>0.15 || stick.lx<-0.15){pxVelocity=stick.lx;}
   if(stick.ly>0.15 || stick.ly<-0.15){pyVelocity=stick.ly;}
+  if(px<50){px+=2;cx+=2;}
+  if(py<50){py+=2;cy+=2;}
+  if(px>width-50){px-=2;cx-=2;}
+  if(py>height-50){py-=2;cy-=2;}
 }
 
 function player() {
   imageMode(CENTER);
   push();
   translate(px,py);
-  rotate(pr);
+  angleMode(DEGREES);
+  rotate(pr-pr*2);
   if(pxVelocity!==0 || pyVelocity!==0){
     if(floor(pWalkCycle)===0){image(images.player_foot_l,0,0);}
     if(floor(pWalkCycle)===1 || pWalkCycle===3){image(images.player_feet,0,0);}
@@ -284,8 +289,9 @@ function player() {
   image(images.player,0,0);
   pop();
   stroke(0);
-  strokeWeight(5);
-  pr = atan2(stick.ly*100 + py, stick.lx*100 + px);
+  strokeWeight(35);
+  pr = stick.lx*180+stick.ly*180;
+  point(stick.lx*20 - px, stick.ly*20 - py);
   noStroke();
   if(pWalkCycle>3){pWalkCycle=0;}
   if(pxVelocity!==0 || pyVelocity!==0){
@@ -297,7 +303,7 @@ function player() {
 
 function draw() {
   input();
-  for(var j=0;j<height;j++){
+  for(var j=0;j<height*1.5;j++){
     for(var i=0;i<width;i++){
       image(images.bg,i,j);
       i+=127;
