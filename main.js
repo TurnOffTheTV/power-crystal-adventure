@@ -20,8 +20,8 @@ var errorShown;
 setInterval(() => {
   players[0] = navigator.getGamepads()[0];
   console.log(stick.ly);
-  stick[0].lx=players[0].axes[0];
-  stick[0].ly=players[0].axes[1];
+  stick.lx=players[0].axes[0];
+  stick.ly=players[0].axes[1];
 }, 100);
 
 function preload(){
