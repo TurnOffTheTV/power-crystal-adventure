@@ -1,3 +1,4 @@
+var scene;
 var sounds;
 var images;
 var models;
@@ -11,18 +12,20 @@ var pr;
 var keysNow;
 var pWalkCycle;
 var player_foot_r;
-var stick;
+var stick = [{lx:0,ly:0},{lx:0,ly:0},{lx:0,ly:0},{lx:0,ly:0}];
 var buttons;
-var players;
+var players = [0,1,2,3];
+var errorShown;
 
 setInterval(() => {
-  player.one = navigator.getGamepads()[0];
-  console.log(gamepad);
-  stick.lx=player.one.axes[0];
-  stick.ly=player.one.axes[1];
-}, 100) // print axes 10 times per second
+  players[0] = navigator.getGamepads()[0];
+  console.log(stick.ly);
+  stick[0].lx=players[0].axes[0];
+  stick[0].ly=players[0].axes[1];
+}, 100);
 
 function preload(){
+  scene=0;
   gamepad = navigator.getGamepads()[0];
   sounds = {
     error:loadSound('sounds/error.mp3'),
@@ -82,6 +85,7 @@ function setup() {
 }
 
 function errorDisplay(errorMessage) {
+  errorShown=true;
   if(sounds.error.isPlaying()===false && sounds.errorPlays===0){sounds.error.play();sounds.errorPlays=1;}
   background(255);
   fill(0);
@@ -101,6 +105,8 @@ function mapLoad() {
   image(images.cliff_tr,64*9,0);
   image(images.cliff_l,64*15,0);
 
+  image(images.grass,-64*2,64);
+  image(images.grass,-64,64);
   image(images.cliff_l,0,64);
   image(images.grass,64,64);
   image(images.grass,64*2,64);
@@ -113,6 +119,8 @@ function mapLoad() {
   image(images.cliff_r,64*9,64);
   image(images.cliff_l,64*15,64);
 
+  image(images.grass,-64*2,64*2);
+  image(images.grass,-64,64*2);
   image(images.cliff_l,0,64*2);
   image(images.grass,64,64*2);
   image(images.grass,64*2,64*2);
@@ -125,6 +133,8 @@ function mapLoad() {
   image(images.cliff_r,64*9,64*2);
   image(images.cliff_l,64*15,64*2);
 
+  image(images.grass,-64*2,64*3);
+  image(images.grass,-64,64*3);
   image(images.cliff_bl_dirt,0,64*3);
   image(images.grass,64,64*3);
   image(images.grass,64*2,64*3);
@@ -272,13 +282,16 @@ function input() {
   if(py<50){py+=2;cy+=2;}
   if(px>width-50){px-=2;cx-=2;}
   if(py>height-50){py-=2;cy-=2;}
+  if(stick.lx>0 && stick.ly<0){pr=atan(stick.lx/stick.ly);}
+  if(stick.lx<0 && stick.ly<0){pr=tan(stick.lx/stick.ly)+180;}
+  if(stick.lx>0 && stick.ly>0){pr=atan(stick.lx/stick.ly)+360;}
 }
 
 function player() {
   imageMode(CENTER);
   push();
   translate(px,py);
-  angleMode(DEGREES);
+  angleMode(RADIANS);
   rotate(pr-pr*2);
   if(pxVelocity!==0 || pyVelocity!==0){
     if(floor(pWalkCycle)===0){image(images.player_foot_l,0,0);}
@@ -288,11 +301,6 @@ function player() {
   } else {image(images.player_feet,0,0);}
   image(images.player,0,0);
   pop();
-  stroke(0);
-  strokeWeight(35);
-  pr = stick.lx*180+stick.ly*180;
-  point(stick.lx*20 - px, stick.ly*20 - py);
-  noStroke();
   if(pWalkCycle>3){pWalkCycle=0;}
   if(pxVelocity!==0 || pyVelocity!==0){
     if(pWalkCycle===0){image(images.player_foot_l,0,0);}
@@ -302,6 +310,8 @@ function player() {
 }
 
 function draw() {
+  if(errorShown===false){sounds.errorPlays=0;}
+  errorShown=false;
   input();
   for(var j=0;j<height*1.5;j++){
     for(var i=0;i<width;i++){
