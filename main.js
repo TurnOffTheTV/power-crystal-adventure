@@ -12,17 +12,11 @@ var pr;
 var keysNow;
 var pWalkCycle;
 var player_foot_r;
-var stick = [{lx:0,ly:0},{lx:0,ly:0},{lx:0,ly:0},{lx:0,ly:0}];
+var stick;
 var buttons;
-var players = [0,1,2,3];
+var gamepad;
 var errorShown;
-
-setInterval(() => {
-  players[0] = navigator.getGamepads()[0];
-  console.log(stick.ly);
-  stick.lx=players[0].axes[0];
-  stick.ly=players[0].axes[1];
-}, 100);
+var controlMode = "keyboard";
 
 function preload(){
   scene=0;
@@ -76,7 +70,22 @@ function preload(){
     rx:0,
     ry:0
   };
+  keysNow={
+    up:false,
+    down:false,
+    left:false,
+    right:false
+  };
 }
+
+setInterval(() => {
+  if(controlMode==="gamepad"){
+    gamepad = navigator.getGamepads()[0];
+    console.log(stick.ly);
+    stick.lx=gamepad.axes[0];
+    stick.ly=gamepad.axes[1];
+  }
+}, 100);
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -274,17 +283,37 @@ function mapLoad() {
 }
 
 function input() {
-  pxVelocity = 0;
-  pyVelocity = 0;
-  if(stick.lx>0.15 || stick.lx<-0.15){pxVelocity=stick.lx;}
-  if(stick.ly>0.15 || stick.ly<-0.15){pyVelocity=stick.ly;}
-  if(px<50){px+=2;cx+=2;}
-  if(py<50){py+=2;cy+=2;}
-  if(px>width-50){px-=2;cx-=2;}
-  if(py>height-50){py-=2;cy-=2;}
-  if(stick.lx>0 && stick.ly<0){pr=atan(stick.lx/stick.ly);}
-  if(stick.lx<0 && stick.ly<0){pr=tan(stick.lx/stick.ly)+180;}
-  if(stick.lx>0 && stick.ly>0){pr=atan(stick.lx/stick.ly)+360;}
+  if(controlMode==="gamepad"){
+    pxVelocity = 0;
+    pyVelocity = 0;
+    if(stick.lx>0.15 || stick.lx<-0.15){pxVelocity=stick.lx;}
+    if(stick.ly>0.15 || stick.ly<-0.15){pyVelocity=stick.ly;}
+    if(px<50){px+=2;cx+=2;}
+    if(py<50){py+=2;cy+=2;}
+    if(px>width-50){px-=2;cx-=2;}
+    if(py>height-50){py-=2;cy-=2;}
+    if(stick.lx>0 && stick.ly<0){pr=atan(stick.lx/stick.ly);}
+    if(stick.lx<0 && stick.ly<0){pr=tan(stick.lx/stick.ly)+180;}
+    if(stick.lx>0 && stick.ly>0){pr=atan(stick.lx/stick.ly)+360;}
+  }
+  if(controlMode==="keyboard"){
+    function keyPressed() {
+      if(keyIsPressed && keyCode===87){keysNow.up=true;}
+      if(keyIsPressed && keyCode===83){keysNow.down=true;}
+      if(keyIsPressed && keyCode===65){keysNow.left=true;}
+      if(keyIsPressed && keyCode===68){keysNow.right=true;}
+    }
+    function keyReleased() {
+      if(keyIsPressed && keyCode===87){keysNow.up=false;}
+      if(keyIsPressed && keyCode===83){keysNow.down=false;}
+      if(keyIsPressed && keyCode===65){keysNow.left=false;}
+      if(keyIsPressed && keyCode===68){keysNow.right=false;}
+    }
+    if(keysNow.up){pyVelocity=-1;}
+    if(keysNow.down){pyVelocity=1;}
+    if(keysNow.left){pxVelocity=-1;}
+    if(keysNow.right){pxVelocity=1;}
+  }
 }
 
 function player() {
@@ -325,6 +354,5 @@ function draw() {
   mapLoad();
   pop();
   player();
-  pr+=0.01;
   if(width!==windowWidth || height!==windowHeight){errorDisplay("Window size changed.");}
 }
