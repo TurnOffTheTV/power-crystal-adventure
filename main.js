@@ -16,7 +16,7 @@ var stick;
 var buttons;
 var gamepad;
 var errorShown;
-var controlMode = "keyboard";
+var controlMode = "gamepad";
 
 function preload(){
   scene=0;
@@ -57,7 +57,9 @@ function preload(){
     white_flower:loadImage('images/white-flower.png'),
     sunflower:loadImage('images/sunflower.png')
     };
-  models = {};
+  models = {
+    sculpt:loadModel('sculpt.obj')
+  };
   cx = 0;
   cy = 0;
   pxVelocity = 0;
